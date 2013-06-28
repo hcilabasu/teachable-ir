@@ -19,11 +19,16 @@ public class Calibrate {
 
 	public Calibrate(PApplet p) {
 		this.parent = p;
-
-		destination_points.add(new PVector(parent.width / 2 + 2, 0+2));
-		destination_points.add(new PVector(parent.width - 2, 0+2));
-		destination_points.add(new PVector(parent.width - 2, parent.height - 2));
-		destination_points.add(new PVector(parent.width / 2 + 2, parent.height - 2));
+		
+		/*
+			On a resolution of 1280x800, The first point is (642,2) and it's at the TOP. 
+			The last point (642,798) is at the BOTTOM. Therefore, y increases as you go 
+			down on the display.
+		*/
+		destination_points.add(new PVector(parent.width / 2 + 2, 0+2)); // Top left corner
+		destination_points.add(new PVector(parent.width - 2, 0+2)); // Top right corner
+		destination_points.add(new PVector(parent.width - 2, parent.height - 2)); // Bottom right corner
+		destination_points.add(new PVector(parent.width / 2 + 2, parent.height - 2)); // Bottom left corner
 	}
 
 	public void drawCalibrationBoundingBox(ArrayList<PVector> cp) {
@@ -44,11 +49,17 @@ public class Calibrate {
 
 	public void calculateTransform(ArrayList<PVector> dp, ArrayList<PVector> cp) {
 		System.out.println("Calculating perspective transform...");
-		this.transform = PerspectiveTransform.getQuadToQuad(cp.get(0).x,
-				cp.get(0).y, cp.get(1).x, cp.get(1).y, cp.get(2).x,
-				cp.get(2).y, cp.get(3).x, cp.get(3).y, dp.get(0).x,
-				dp.get(0).y, dp.get(1).x, dp.get(1).y, dp.get(2).x,
-				dp.get(2).y, dp.get(3).x, dp.get(3).y);
+		this.transform = PerspectiveTransform.getQuadToQuad(
+				// Original points
+				cp.get(0).x, cp.get(0).y, 
+				cp.get(1).x, cp.get(1).y, 
+				cp.get(2).x, cp.get(2).y, 
+				cp.get(3).x, cp.get(3).y,
+				// Target points
+				dp.get(0).x, dp.get(0).y, 
+				dp.get(1).x, dp.get(1).y, 
+				dp.get(2).x, dp.get(2).y, 
+				dp.get(3).x, dp.get(3).y);
 
 		System.out.println(transform);
 	}
@@ -91,10 +102,32 @@ public class Calibrate {
 
 	}
 
-	public void drawCurrentLocation(PVector p) {
-		parent.fill(0, 0, 255);
-
+	public void drawCurrentLocation(PVector p, int quadrant) {
+		switch(quadrant){
+			case 1:
+				parent.fill(0, 0, 255);
+				break;
+			case 2:
+				parent.fill(0, 0, 192);
+				break;
+			case 3:
+				parent.fill(0, 0, 128);
+				break;
+			case 4:
+				parent.fill(0, 0, 64);
+				break;
+		}
+		
 		parent.ellipse(p.x, p.y, 10, 10);
+		
+		if(p.x != Application.OUT_OF_BOUNDS && p.y != Application.OUT_OF_BOUNDS){
+			System.out.println("Quadrant " + quadrant + ": (" + p.x + "," + p.y + ")");
+		} else {
+			System.out.println("Quadrant " + quadrant + ": OUT OF BOUNDS");
+		}
+		
+		// Updating position provider
+		// PositionProvider.getInstance().setXAndY(p.x, p.y);
 		
 		if ( this.bounding_box != null && this.bounding_box.contains(p.x,p.y) ) {
 			drawTransformedLocation(p);
