@@ -2,4 +2,5 @@
 .settings
 .classpath
 !*.jar
+*.class
 
