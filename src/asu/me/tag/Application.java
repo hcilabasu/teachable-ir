@@ -51,9 +51,10 @@ public class Application extends PApplet {
 			// Drawing calculated point
 			PVector point = calibrate.plane.getCurrentPoint();
 			ellipse(point.x, point.y, 10, 10);
-			PVector tPoint = calibrate.plane.getCurrentTransformedPoint(); 
 			// "("+x+","+y+")"
-			text("("+tPoint.x+","+tPoint.y+")", point.x + 10, point.y + 10);
+			float x = map(point.x, width/2, width, -5, 5);
+			float y = map(point.y, height, 0, -5, 5);
+			text("("+x+","+y+")", point.x + 10, point.y + 10);
 			
 			// Drawing all points; good for debugging
 //			fill(0,0,0,63);

@@ -45,4 +45,11 @@ public class CartesianPlane {
 		return new PVector(x,y);
 	}
 	
+	// Same as 'getCurrentTransformedPoint()', but returning result as array
+	public float[] getCurrentPositionAsArray(){
+		PVector pos = getCurrentTransformedPoint();
+		float[] ret = { pos.x, pos.y };
+		return ret;
+	}
+	
 }

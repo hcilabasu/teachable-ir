@@ -1,9 +1,14 @@
 package asu.me.tag;
 import java.awt.Polygon;
 import java.awt.geom.Point2D;
-import java.util.*;
-import javax.media.jai.*;
-import processing.core.*;
+import java.util.ArrayList;
+
+import javax.media.jai.PerspectiveTransform;
+
+import processing.core.PApplet;
+import processing.core.PConstants;
+import processing.core.PVector;
+import py4j.GatewayServer;
 
 public class Calibrate {
 	
@@ -44,6 +49,9 @@ public class Calibrate {
 		destination_points.add(new PVector(parent.width / 2 + 2, parent.height - 2)); // Bottom left corner
 		
 		plane = new CartesianPlane(quadrants, new PVector(parent.width*0.75f, parent.height*0.5f), parent.width, parent.height);
+		// Sharing position
+		GatewayServer server = new GatewayServer(plane);
+		server.start();
 		
 	}
 
