@@ -10,13 +10,17 @@ public class Application extends PApplet {
 	Calibrate calibrate;
 	OscP5 osc;
 
-	public static final String OSC_IR_1_DATA_STRING = "/wii/1/ir/xys/1";//"/wii/2/ir/xys/1";
-	public static final String OSC_IR_2_DATA_STRING = "/wii/2/ir/xys/1";//"/wii/2/ir/xys/2";
-	public static final String OSC_IR_3_DATA_STRING = "/wii/3/ir/xys/1";//"/wii/2/ir/xys/2";
-	public static final String OSC_IR_4_DATA_STRING = "/wii/4/ir/xys/1";//"/wii/2/ir/xys/2";
+	public static final String OSC_IR_1_1_DATA_STRING = "/wii/1/ir/xys/1";//"/wii/2/ir/xys/1";
+	public static final String OSC_IR_1_2_DATA_STRING = "/wii/1/ir/xys/2";//"/wii/2/ir/xys/1";
+	public static final String OSC_IR_2_1_DATA_STRING = "/wii/2/ir/xys/1";//"/wii/2/ir/xys/2";
+	public static final String OSC_IR_2_2_DATA_STRING = "/wii/2/ir/xys/2";//"/wii/2/ir/xys/2";
+	public static final String OSC_IR_3_1_DATA_STRING = "/wii/3/ir/xys/1";//"/wii/2/ir/xys/2";
+	public static final String OSC_IR_3_2_DATA_STRING = "/wii/3/ir/xys/2";//"/wii/2/ir/xys/2";
+	public static final String OSC_IR_4_1_DATA_STRING = "/wii/4/ir/xys/1";//"/wii/2/ir/xys/2";
+	public static final String OSC_IR_4_2_DATA_STRING = "/wii/4/ir/xys/2";//"/wii/2/ir/xys/2";
 	
 	public static final int OSC_PORT= 9000;
-	public PVector[] ir_points = {null, null, null, null};
+	public PVector[][] ir_points = {{null, null}, {null, null}, {null, null}, {null, null}};
 	
 	public static final int OUT_OF_BOUNDS = Integer.MAX_VALUE;
 	
@@ -26,10 +30,14 @@ public class Application extends PApplet {
 		
 		osc = new OscP5(this, OSC_PORT);
 
-		osc.plug(this, "parseIRMessage1", OSC_IR_1_DATA_STRING);
-		osc.plug(this, "parseIRMessage2", OSC_IR_2_DATA_STRING);
-		osc.plug(this, "parseIRMessage3", OSC_IR_3_DATA_STRING);
-		osc.plug(this, "parseIRMessage4", OSC_IR_4_DATA_STRING);
+		osc.plug(this, "parseIRMessage11", OSC_IR_1_1_DATA_STRING);
+		osc.plug(this, "parseIRMessage12", OSC_IR_1_2_DATA_STRING);
+		osc.plug(this, "parseIRMessage21", OSC_IR_2_1_DATA_STRING);
+		osc.plug(this, "parseIRMessage22", OSC_IR_2_2_DATA_STRING);
+		osc.plug(this, "parseIRMessage31", OSC_IR_3_1_DATA_STRING);
+		osc.plug(this, "parseIRMessage32", OSC_IR_3_2_DATA_STRING);
+		osc.plug(this, "parseIRMessage41", OSC_IR_4_1_DATA_STRING);
+		osc.plug(this, "parseIRMessage42", OSC_IR_4_2_DATA_STRING);
 		
 		calibrate = new Calibrate(this);
 		smooth();
@@ -77,31 +85,31 @@ public class Application extends PApplet {
 
 		if (key == 'C' || key == 'c') {
 			
-			// Increment calibration stage
+//			// Increment calibration stage
 			calibrate.calibrationStage++;
 			
 			switch(calibrate.calibrationStage){
 				case CalibrationStage.CENTER:
 					for(int i = 0; i < 4; i++){
 						System.out.println("Setting quadrant " + (i+1) + ": " + ir_points[i]);
-						calibrate.quadrants[i].setCenterPoint(ir_points[i]);
+						calibrate.quadrants[i].setCenterPoint(ir_points[i][0]);
 					}
 					break;
 				case CalibrationStage.Q1:
 					System.out.println("Setting Q1");
-					calibrate.quadrants[0].setEdgePoint(ir_points[0]);
+					calibrate.quadrants[0].setEdgePoint(ir_points[0][0]);
 					break;
 				case CalibrationStage.Q2:
 					System.out.println("Setting Q2");
-					calibrate.quadrants[1].setEdgePoint(ir_points[1]);
+					calibrate.quadrants[1].setEdgePoint(ir_points[1][0]);
 					break;
 				case CalibrationStage.Q3:
 					System.out.println("Setting Q3");
-					calibrate.quadrants[2].setEdgePoint(ir_points[2]);
+					calibrate.quadrants[2].setEdgePoint(ir_points[2][0]);
 					break;
 				case CalibrationStage.Q4:
 					System.out.println("Setting Q4");
-					calibrate.quadrants[3].setEdgePoint(ir_points[3]);
+					calibrate.quadrants[3].setEdgePoint(ir_points[3][0]);
 					break;
 				case CalibrationStage.COMPLETE:
 					calibrate.calculateTransforms();
@@ -134,27 +142,40 @@ public class Application extends PApplet {
 	 * Each one of the parseIRMessageX is for its quadrant. They're meant to 
 	 * send context (which quadrant it's on) to the parseIRMessage method
 	 */
-	public void parseIRMessage1(float _x, float _y, float _size){
-		parseIRMessage(_x, _y, _size, 1);
+	public void parseIRMessage11(float _x, float _y, float _size){
+		parseIRMessage(_x, _y, _size, 1, 1);
 	}
-	public void parseIRMessage2(float _x, float _y, float _size){
-		parseIRMessage(_x, _y, _size, 2);
+	public void parseIRMessage12(float _x, float _y, float _size){
+		parseIRMessage(_x, _y, _size, 1, 2);
 	}
-	public void parseIRMessage3(float _x, float _y, float _size){
-		parseIRMessage(_x, _y, _size, 3);
+	public void parseIRMessage21(float _x, float _y, float _size){
+		parseIRMessage(_x, _y, _size, 2, 1);
 	}
-	public void parseIRMessage4(float _x, float _y, float _size){
-		parseIRMessage(_x, _y, _size, 4);
+	public void parseIRMessage22(float _x, float _y, float _size){
+		parseIRMessage(_x, _y, _size, 2, 2);
+	}
+	public void parseIRMessage31(float _x, float _y, float _size){
+		parseIRMessage(_x, _y, _size, 3, 1);
+	}
+	public void parseIRMessage32(float _x, float _y, float _size){
+		parseIRMessage(_x, _y, _size, 3, 2);
+	}
+	public void parseIRMessage41(float _x, float _y, float _size){
+		parseIRMessage(_x, _y, _size, 4, 1);
+	}
+	public void parseIRMessage42(float _x, float _y, float _size){
+		parseIRMessage(_x, _y, _size, 4, 2);
 	}
 	
-	public void parseIRMessage(float _x, float _y, float _size, int type) {
+	public void parseIRMessage(float _x, float _y, float _size, int type, int id) {
+		System.out.println(_x + "," + _y);
 		// Calculating certainty
 		double c = Math.sqrt(Math.pow(_x - 0.5, 2) + Math.pow(_y - 0.5, 2)); 
 		PVector p = mapIRPoint(_x, _y);
 		// Setting the quadrant current position
-		ir_points[type-1] = p;
+		ir_points[type-1][id-1] = p;
 		// Drawing current point
-		calibrate.drawCurrentLocation(p, type, c); 
+		calibrate.drawCurrentLocation(ir_points[type-1], type, id, c);
 	}
 	
 }
