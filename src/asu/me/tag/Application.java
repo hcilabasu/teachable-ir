@@ -147,12 +147,14 @@ public class Application extends PApplet {
 		parseIRMessage(_x, _y, _size, 4);
 	}
 	
-	public void parseIRMessage(float _x, float _y, float _size, int type) {	
+	public void parseIRMessage(float _x, float _y, float _size, int type) {
+		// Calculating certainty
+		double c = Math.sqrt(Math.pow(_x - 0.5, 2) + Math.pow(_y - 0.5, 2)); 
 		PVector p = mapIRPoint(_x, _y);
 		// Setting the quadrant current position
 		ir_points[type-1] = p;
 		// Drawing current point
-		calibrate.drawCurrentLocation(p, type);
+		calibrate.drawCurrentLocation(p, type, c); 
 	}
 	
 }

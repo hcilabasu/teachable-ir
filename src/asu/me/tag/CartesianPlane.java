@@ -6,7 +6,7 @@ import processing.core.PVector;
 public class CartesianPlane {
 	
 	private Quadrant[] quadrants;
-	private byte currentQuadrant = 0; // 0 is for quadrant I, 1 for II, etc...
+	private int currentQuadrant = 0; // 0 is for quadrant I, 1 for II, etc...
 	private PVector origin;
 	private int width;
 	private int height;
@@ -19,23 +19,31 @@ public class CartesianPlane {
 	}
 	
 	public PVector getCurrentPoint(){
-		PVector point = quadrants[currentQuadrant].currentPoint;
-		float x = point.x;
-		float y = point.y;
-		if(x >= origin.x && y <= origin.y){
-			// Quadrant I
-			currentQuadrant = 0;
-		} else if(x < origin.x && y <= origin.y){
-			// Quadrant II
-			currentQuadrant = 1;
-		} else if(x < origin.x && y > origin.y){
-			// Quadrant IV
-			currentQuadrant = 2;
-		} else if(x >= origin.x && y > origin.y){
-			// Quadrant IV
-			currentQuadrant = 3;
+//		PVector point = quadrants[currentQuadrant].currentPoint;
+//		float x = point.x;
+//		float y = point.y;
+//		if(x >= origin.x && y <= origin.y){
+//			// Quadrant I
+//			currentQuadrant = 0;
+//		} else if(x < origin.x && y <= origin.y){
+//			// Quadrant II
+//			currentQuadrant = 1;
+//		} else if(x < origin.x && y > origin.y){
+//			// Quadrant III
+//			currentQuadrant = 2;
+//		} else if(x >= origin.x && y > origin.y){
+//			// Quadrant IV
+//			currentQuadrant = 3;
+//		}
+		Quadrant current = quadrants[currentQuadrant];
+		for (int i = 0; i < 3; i++) {
+			if((int)(current.certainty*10) >= (int)(quadrants[i].certainty*10)){
+				current = quadrants[i];
+				currentQuadrant = i;
+			}
 		}
-		return point;
+//		System.out.println("Current QUAD: " + currentQuadrant);
+		return current.currentPoint;
 	}
 	
 	public PVector getCurrentTransformedPoint(){

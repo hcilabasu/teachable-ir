@@ -113,9 +113,9 @@ public class Calibrate {
 		return new PVector(dst_pt.x, dst_pt.y);
 	}
 	
-	public void drawCurrentLocation(PVector p, int quadrant) {
+	public void drawCurrentLocation(PVector p, int quadrant, double c) {
 		switch(quadrant){
-			case 1:
+			case 1: 
 				parent.fill(0, 0, 255);
 				break;
 			case 2:
@@ -143,7 +143,16 @@ public class Calibrate {
 		if(calibrationStage == CalibrationStage.COMPLETE){
 			PVector point = quadrants[quadrant-1].mapPoint(p);
 			quadrants[quadrant-1].currentPoint = point;
+			quadrants[quadrant-1].certainty = c;
 //			parent.ellipse(point.x, point.y, 10, 10);
+			
+			for (int i = 0; i < quadrants.length; i++) {
+				if(i == 3){
+					System.out.println("Q" + (i+1) + ": " + (int)(quadrants[i].certainty*10));
+				} else {
+					System.out.print("Q" + (i+1) + ": " + (int)(quadrants[i].certainty*10) + " ||| ");
+				}
+			}
 		}
 	}
 	

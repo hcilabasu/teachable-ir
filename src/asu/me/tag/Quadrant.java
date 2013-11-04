@@ -29,6 +29,7 @@ public abstract class Quadrant {
 	public PVector[] points;
 	public PVector[] boundaryPoints;
 	public PerspectiveTransform transform;
+	public double certainty;
 	
 	public Quadrant(){
 		points = new PVector[4];
