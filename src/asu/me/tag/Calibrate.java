@@ -146,17 +146,17 @@ public class Calibrate {
 		
 		if(calibrationStage == CalibrationStage.COMPLETE){
 //			PVector point = quadrants[quadrant-1].mapPoint(ir_points);
-			quadrants[quadrant-1].currentPoint = ir_points;
+			quadrants[quadrant-1].currentPoint = ir_points[0];
 			quadrants[quadrant-1].certainty = c;
 //			parent.ellipse(point.x, point.y, 10, 10);
 			
-//			for (int i = 0; i < quadrants.length; i++) {
-//				if(i == 3){
-//					System.out.println("Q" + (i+1) + ": " + (int)(quadrants[i].certainty*10));
-//				} else {
-//					System.out.print("Q" + (i+1) + ": " + (int)(quadrants[i].certainty*10) + " ||| ");
-//				}
-//			}
+			for (int i = 0; i < quadrants.length; i++) {
+				if(i == 3){
+					System.out.println("Q" + (i+1) + ": " + (int)(quadrants[i].certainty*10));
+				} else {
+					System.out.print("Q" + (i+1) + ": " + (int)(quadrants[i].certainty*10) + " ||| ");
+				}
+			}
 		}
 	}
 	
