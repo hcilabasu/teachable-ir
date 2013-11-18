@@ -41,5 +41,4 @@ public class PositionProvider {
 		return new Float[]{ x, y };
 	}
 	
-	
 }

@@ -113,7 +113,7 @@ public class Calibrate {
 		return new PVector(dst_pt.x, dst_pt.y);
 	}
 	
-	public void drawCurrentLocation(PVector p, int quadrant, double c) {
+	public void drawCurrentLocation(PVector[] ir_points, int quadrant, int id, double c) {
 		switch(quadrant){
 			case 1: 
 				parent.fill(0, 0, 255);
@@ -129,7 +129,11 @@ public class Calibrate {
 				break;
 		}
 		
-		parent.ellipse(p.x, p.y, 10, 10);
+		parent.ellipse(ir_points[0].x, ir_points[0].y, 10, 10);
+		parent.ellipse(ir_points[1].x, ir_points[1].y, 10, 10);
+		// Drawing line between them
+		parent.stroke(200,200,200);
+        parent.line(ir_points[0].x, ir_points[0].y, ir_points[1].x, ir_points[1].y);
 		
 //		if(p.x != Application.OUT_OF_BOUNDS && p.y != Application.OUT_OF_BOUNDS){
 //			System.out.println("Quadrant " + quadrant + ": (" + p.x + "," + p.y + ")");
@@ -141,18 +145,18 @@ public class Calibrate {
 		// PositionProvider.getInstance().setXAndY(p.x, p.y);
 		
 		if(calibrationStage == CalibrationStage.COMPLETE){
-			PVector point = quadrants[quadrant-1].mapPoint(p);
-			quadrants[quadrant-1].currentPoint = point;
+//			PVector point = quadrants[quadrant-1].mapPoint(ir_points);
+			quadrants[quadrant-1].currentPoint = ir_points;
 			quadrants[quadrant-1].certainty = c;
 //			parent.ellipse(point.x, point.y, 10, 10);
 			
-			for (int i = 0; i < quadrants.length; i++) {
-				if(i == 3){
-					System.out.println("Q" + (i+1) + ": " + (int)(quadrants[i].certainty*10));
-				} else {
-					System.out.print("Q" + (i+1) + ": " + (int)(quadrants[i].certainty*10) + " ||| ");
-				}
-			}
+//			for (int i = 0; i < quadrants.length; i++) {
+//				if(i == 3){
+//					System.out.println("Q" + (i+1) + ": " + (int)(quadrants[i].certainty*10));
+//				} else {
+//					System.out.print("Q" + (i+1) + ": " + (int)(quadrants[i].certainty*10) + " ||| ");
+//				}
+//			}
 		}
 	}
 	
