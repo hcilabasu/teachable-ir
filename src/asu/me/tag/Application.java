@@ -1,12 +1,18 @@
 package asu.me.tag;
+import java.util.HashMap;
+import java.util.Map;
+
 import oscP5.OscP5;
 import processing.core.PApplet;
 import processing.core.PVector;
+import py4j.GatewayServer;
+import asu.me.tag.util.Util;
 
 public class Application extends PApplet {
 
 	private static final long serialVersionUID = 8412123833928508734L;
-
+	private static final int MEDIAM_BUFFER_SIZE = 100;
+	
 	Calibrate calibrate;
 	OscP5 osc;
 
@@ -24,12 +30,34 @@ public class Application extends PApplet {
 	
 	public static final int OUT_OF_BOUNDS = Integer.MAX_VALUE;
 	
+	public Map<Integer, MedianList[]> values;
+	
+	public PVector[][] sensor_values;
+	
 	public void setup() {
+		frameRate(12);
 		// Define size of output canvas
 		size(1200, 600);
 		
-		osc = new OscP5(this, OSC_PORT);
+		
+		calibrate = new Calibrate(this);
+		smooth();
+		
+		values = new HashMap<Integer, MedianList[]>();
+		
+		sensor_values = new PVector[4][2];
+	
+		System.out.println(sensor_values);
 
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 2; j++) {
+				sensor_values[i][j] = new PVector(0,0);
+				ir_points[i][j] = new PVector(0,0);
+			}
+		}
+		
+		osc = new OscP5(this, OSC_PORT);
+		
 		osc.plug(this, "parseIRMessage11", OSC_IR_1_1_DATA_STRING);
 		osc.plug(this, "parseIRMessage12", OSC_IR_1_2_DATA_STRING);
 		osc.plug(this, "parseIRMessage21", OSC_IR_2_1_DATA_STRING);
@@ -39,14 +67,14 @@ public class Application extends PApplet {
 		osc.plug(this, "parseIRMessage41", OSC_IR_4_1_DATA_STRING);
 		osc.plug(this, "parseIRMessage42", OSC_IR_4_2_DATA_STRING);
 		
-		calibrate = new Calibrate(this);
-		smooth();
-		
-		
-				
 	}
 
 	public void draw() {
+		for (int i = 1; i <= 4; i++) {
+			for (int j = 1; j <= 2; j++) {
+				readValues(i, j);
+			}
+		}
 		noStroke();
         
 		fill( 255, 255, 255, 50);
@@ -57,12 +85,17 @@ public class Application extends PApplet {
 //		
 		if (calibrate.calibrationStage == CalibrationStage.COMPLETE) {
 			// Drawing calculated point
-			PVector point = calibrate.plane.getCurrentPoint();
-			ellipse(point.x, point.y, 10, 10);
-			// "("+x+","+y+")"
-			float x = map(point.x, width/2, width, -5, 5);
-			float y = map(point.y, height, 0, -5, 5);
-			text("("+x+","+y+")", point.x + 10, point.y + 10);
+			PVector[] tPoint = calibrate.plane.getCurrentTransformedPoint();
+			fill( 0, 0, 255);
+			ellipse(tPoint[0].x, tPoint[0].y, 10, 10);
+			ellipse(tPoint[1].x, tPoint[1].y, 10, 10);
+			stroke(200,200,200);
+	        line(tPoint[0].x, tPoint[0].y, tPoint[1].x, tPoint[1].y);
+			
+	        float[] coord = calibrate.plane.getCurrentPositionAsArray();
+	        float orientation = calibrate.plane.getCurrentOrientation();
+	        
+			text("("+coord[0]+","+coord[0]+") O: " + orientation, tPoint[0].x + 10, tPoint[0].y + 10);
 			
 			// Drawing all points; good for debugging
 //			fill(0,0,0,63);
@@ -80,7 +113,7 @@ public class Application extends PApplet {
 //		GatewayServer server = new GatewayServer(PositionProvider.getInstance());
 //		server.start();
 	}
-
+	
 	public void keyPressed() {
 
 		if (key == 'C' || key == 'c') {
@@ -92,24 +125,24 @@ public class Application extends PApplet {
 				case CalibrationStage.CENTER:
 					for(int i = 0; i < 4; i++){
 						System.out.println("Setting quadrant " + (i+1) + ": " + ir_points[i]);
-						calibrate.quadrants[i].setCenterPoint(ir_points[i][0]);
+						calibrate.quadrants[i].setCenterPoint(Util.getMidPoint(ir_points[i]));
 					}
 					break;
 				case CalibrationStage.Q1:
 					System.out.println("Setting Q1");
-					calibrate.quadrants[0].setEdgePoint(ir_points[0][0]);
+					calibrate.quadrants[0].setEdgePoint(Util.getMidPoint(ir_points[0]));
 					break;
 				case CalibrationStage.Q2:
 					System.out.println("Setting Q2");
-					calibrate.quadrants[1].setEdgePoint(ir_points[1][0]);
+					calibrate.quadrants[1].setEdgePoint(Util.getMidPoint(ir_points[1]));
 					break;
 				case CalibrationStage.Q3:
 					System.out.println("Setting Q3");
-					calibrate.quadrants[2].setEdgePoint(ir_points[2][0]);
+					calibrate.quadrants[2].setEdgePoint(Util.getMidPoint(ir_points[2]));
 					break;
 				case CalibrationStage.Q4:
 					System.out.println("Setting Q4");
-					calibrate.quadrants[3].setEdgePoint(ir_points[3][0]);
+					calibrate.quadrants[3].setEdgePoint(Util.getMidPoint(ir_points[3]));
 					break;
 				case CalibrationStage.COMPLETE:
 					calibrate.calculateTransforms();
@@ -168,14 +201,43 @@ public class Application extends PApplet {
 	}
 	
 	public void parseIRMessage(float _x, float _y, float _size, int type, int id) {
-		System.out.println(_x + "," + _y);
-		// Calculating certainty
-		double c = Math.sqrt(Math.pow(_x - 0.5, 2) + Math.pow(_y - 0.5, 2)); 
-		PVector p = mapIRPoint(_x, _y);
-		// Setting the quadrant current position
-		ir_points[type-1][id-1] = p;
-		// Drawing current point
-		calibrate.drawCurrentLocation(ir_points[type-1], type, id, c);
+		sensor_values[type-1][id-1] = new PVector(_x, _y);
+	}
+
+	public void readValues(int type, int id) {
+		if(sensor_values[type-1][id-1] != null){
+				
+			float _x = sensor_values[type-1][id-1].x;
+			float _y = sensor_values[type-1][id-1].y;
+			
+			double c;
+			PVector p;
+			if(_x >= 1 && _y >= 1){
+				// TODO handle untracked IR sources
+				// System.out.println("UNTRACKED");
+				_x = OUT_OF_BOUNDS;
+				_y = OUT_OF_BOUNDS;
+				c = Double.MAX_VALUE;
+				p = new PVector(_x,_y);
+			} else {
+				MedianList[] l = values.get(type-1);
+				if(l == null){
+					l = new MedianList[] {new MedianList(MEDIAM_BUFFER_SIZE), new MedianList(MEDIAM_BUFFER_SIZE)};
+				}
+				l[id-1].add(_x, MedianList.X);
+				l[id-1].add(_y, MedianList.Y);
+				_x = l[id-1].getMedian(MedianList.X);
+				_y = l[id-1].getMedian(MedianList.Y);
+				// System.out.println(_x + "," + _y);
+				// Calculating certainty
+				c = Math.sqrt(Math.pow(_x - 0.5, 2) + Math.pow(_y - 0.5, 2)); 
+				p = mapIRPoint(_x, _y);
+			}
+			// Setting the quadrant current position
+			ir_points[type-1][id-1] = p;
+			// Drawing current point
+			calibrate.drawCurrentLocation(ir_points[type-1], type, id, c);
+		}
 	}
 	
 }
