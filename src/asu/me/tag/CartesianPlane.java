@@ -66,7 +66,7 @@ public class CartesianPlane {
 		PVector[] pos = getCurrentTransformedPoint(); // TODO make work with array
 		PVector mid = Util.getMidPoint(pos);
 		float x = Application.map(mid.x, width/2, width, -5, 5);
-		float y = Application.map(mid.y, 0, height, -5, 5);
+		float y = Application.map(mid.y, height, 0, -5, 5);
 		
 		float[] ret = { x, y };
 		return ret;
@@ -89,17 +89,17 @@ public class CartesianPlane {
 				angle = angle + 360;
 			}
 			// Calculating angle median
-			addAngle(angle);
-			median = getAngleMedian();			
-			orientationDelta = Math.abs(Math.abs(angle) - median);
-			swap = orientationDelta > 170;
-			if(swap){
-				first = Math.abs(first - 1);
-				second = Math.abs(second - 1); 
-				System.out.println("SWAP");
-			} else if (orientationDelta != 0){
-//				System.out.println(orientationDelta);			
-			} 
+//			addAngle(angle);
+//			median = getAngleMedian();			
+//			orientationDelta = Math.abs(Math.abs(angle) - median);
+//			swap = orientationDelta > 170;
+//			if(swap){
+//				first = Math.abs(first - 1);
+//				second = Math.abs(second - 1); 
+//				System.out.println("SWAP");
+//			} else if (orientationDelta != 0){
+////				System.out.println(orientationDelta);			
+//			} 
 			
 //			System.out.println(median);
 			

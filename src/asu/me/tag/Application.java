@@ -87,15 +87,17 @@ public class Application extends PApplet {
 			// Drawing calculated point
 			PVector[] tPoint = calibrate.plane.getCurrentTransformedPoint();
 			fill( 0, 0, 255);
-			ellipse(tPoint[0].x, tPoint[0].y, 10, 10);
-			ellipse(tPoint[1].x, tPoint[1].y, 10, 10);
+//			ellipse(tPoint[0].x, tPoint[0].y, 10, 10);
+//			ellipse(tPoint[1].x, tPoint[1].y, 10, 10);
+			PVector midPoint = Util.getMidPoint(new PVector[]{tPoint[0], tPoint[1]});
+			ellipse(midPoint.x, midPoint.y, 10, 10);
 			stroke(200,200,200);
 	        line(tPoint[0].x, tPoint[0].y, tPoint[1].x, tPoint[1].y);
 			
 	        float[] coord = calibrate.plane.getCurrentPositionAsArray();
 	        float orientation = calibrate.plane.getCurrentOrientation();
 	        
-			text("("+coord[0]+","+coord[0]+") O: " + orientation, tPoint[0].x + 10, tPoint[0].y + 10);
+			text("("+coord[0]+","+coord[1]+") O: " + orientation, midPoint.x + 20, midPoint.y + 20);
 			
 			// Drawing all points; good for debugging
 //			fill(0,0,0,63);
