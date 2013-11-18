@@ -25,7 +25,7 @@ public abstract class Quadrant {
 	public static int COMPL1 = 2;
 	public static int COMPL2 = 3;
 
-	public PVector currentPoint;
+	public PVector[] currentPoint;
 	public PVector[] points;
 	public PVector[] boundaryPoints;
 	public PerspectiveTransform transform;
@@ -33,7 +33,7 @@ public abstract class Quadrant {
 	
 	public Quadrant(){
 		points = new PVector[4];
-		currentPoint = new PVector(0,0);
+		currentPoint = new PVector[]{new PVector(0,0), new PVector(0,0)};
 	}
 	
 	public void setCenterPoint(PVector point){
