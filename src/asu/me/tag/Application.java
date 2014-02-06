@@ -5,7 +5,6 @@ import java.util.Map;
 import oscP5.OscP5;
 import processing.core.PApplet;
 import processing.core.PVector;
-import py4j.GatewayServer;
 import asu.me.tag.util.Util;
 
 public class Application extends PApplet {
