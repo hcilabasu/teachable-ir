@@ -33,7 +33,9 @@ public abstract class Quadrant {
 	
 	public Quadrant(){
 		points = new PVector[4];
-		currentPoint = new PVector[]{new PVector(0,0), new PVector(0,0)};
+		//added a third point to facilitate 3 point tracking
+		currentPoint = new PVector[]{new PVector(0,0), new PVector(0,0), new PVector(0,0)};
+		//currentPoint is set in the Calibrate code in drawCurrentLocation//
 	}
 	
 	public void setCenterPoint(PVector point){

@@ -10,22 +10,30 @@ import asu.me.tag.util.Util;
 public class Application extends PApplet {
 
 	private static final long serialVersionUID = 8412123833928508734L;
-	private static final int MEDIAM_BUFFER_SIZE = 100;
+	private static final int MEDIAM_BUFFER_SIZE = 25;
 	
 	Calibrate calibrate;
 	OscP5 osc;
 
 	public static final String OSC_IR_1_1_DATA_STRING = "/wii/1/ir/xys/1";//"/wii/2/ir/xys/1";
 	public static final String OSC_IR_1_2_DATA_STRING = "/wii/1/ir/xys/2";//"/wii/2/ir/xys/1";
+	public static final String OSC_IR_1_3_DATA_STRING = "/wii/1/ir/xys/3";
 	public static final String OSC_IR_2_1_DATA_STRING = "/wii/2/ir/xys/1";//"/wii/2/ir/xys/2";
 	public static final String OSC_IR_2_2_DATA_STRING = "/wii/2/ir/xys/2";//"/wii/2/ir/xys/2";
+	public static final String OSC_IR_2_3_DATA_STRING = "/wii/2/ir/xys/3";
 	public static final String OSC_IR_3_1_DATA_STRING = "/wii/3/ir/xys/1";//"/wii/2/ir/xys/2";
 	public static final String OSC_IR_3_2_DATA_STRING = "/wii/3/ir/xys/2";//"/wii/2/ir/xys/2";
+	public static final String OSC_IR_3_3_DATA_STRING = "/wii/3/ir/xys/3";
 	public static final String OSC_IR_4_1_DATA_STRING = "/wii/4/ir/xys/1";//"/wii/2/ir/xys/2";
 	public static final String OSC_IR_4_2_DATA_STRING = "/wii/4/ir/xys/2";//"/wii/2/ir/xys/2";
+	public static final String OSC_IR_4_3_DATA_STRING = "/wii/4/ir/xys/3";
 	
 	public static final int OSC_PORT= 9000;
-	public PVector[][] ir_points = {{null, null}, {null, null}, {null, null}, {null, null}};
+	
+	public final int TRACK_POINTS = 3;
+	public final int CAMERAS = 4;
+	
+	public PVector[][] ir_points = {{null, null, null}, {null, null, null}, {null, null, null}, {null, null, null}};
 	
 	public static final int OUT_OF_BOUNDS = Integer.MAX_VALUE;
 	
@@ -44,12 +52,13 @@ public class Application extends PApplet {
 		
 		values = new HashMap<Integer, MedianList[]>();
 		
-		sensor_values = new PVector[4][2];
+		sensor_values = new PVector[CAMERAS][TRACK_POINTS];
 	
 		System.out.println(sensor_values);
 
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 2; j++) {
+		//i= the number of cameras, j= # of points to track
+		for (int i = 0; i < CAMERAS; i++) {
+			for (int j = 0; j < TRACK_POINTS; j++) {
 				sensor_values[i][j] = new PVector(0,0);
 				ir_points[i][j] = new PVector(0,0);
 			}
@@ -57,20 +66,27 @@ public class Application extends PApplet {
 		
 		osc = new OscP5(this, OSC_PORT);
 		
+		//initialize OSculator parsers
+		
 		osc.plug(this, "parseIRMessage11", OSC_IR_1_1_DATA_STRING);
 		osc.plug(this, "parseIRMessage12", OSC_IR_1_2_DATA_STRING);
+		//third point for tracking
+		osc.plug(this, "parseIRMessage13", OSC_IR_1_3_DATA_STRING);
 		osc.plug(this, "parseIRMessage21", OSC_IR_2_1_DATA_STRING);
 		osc.plug(this, "parseIRMessage22", OSC_IR_2_2_DATA_STRING);
+		osc.plug(this, "parseIRMessage23", OSC_IR_2_3_DATA_STRING);
 		osc.plug(this, "parseIRMessage31", OSC_IR_3_1_DATA_STRING);
 		osc.plug(this, "parseIRMessage32", OSC_IR_3_2_DATA_STRING);
+		osc.plug(this, "parseIRMessage33", OSC_IR_3_3_DATA_STRING);
 		osc.plug(this, "parseIRMessage41", OSC_IR_4_1_DATA_STRING);
 		osc.plug(this, "parseIRMessage42", OSC_IR_4_2_DATA_STRING);
+		osc.plug(this, "parseIRMessage43", OSC_IR_4_3_DATA_STRING);
 		
 	}
 
 	public void draw() {
-		for (int i = 1; i <= 4; i++) {
-			for (int j = 1; j <= 2; j++) {
+		for (int i = 1; i <= CAMERAS; i++) {
+			for (int j = 1; j <= TRACK_POINTS; j++) {
 				readValues(i, j);
 			}
 		}
@@ -88,13 +104,19 @@ public class Application extends PApplet {
 			fill( 0, 0, 255);
 //			ellipse(tPoint[0].x, tPoint[0].y, 10, 10);
 //			ellipse(tPoint[1].x, tPoint[1].y, 10, 10);
-			PVector midPoint = Util.getMidPoint(new PVector[]{tPoint[0], tPoint[1]});
+
+			//old stuff
+			//PVector midPoint = Util.getMidPoint(new PVector[]{tPoint[0], tPoint[1]}); 
+			
+			PVector midPoint = Util.getGeometryMidpoint(tPoint);
 			ellipse(midPoint.x, midPoint.y, 10, 10);
 			stroke(200,200,200);
+			
+			//Currently draws a random line, not related to the orientation neccisarily
 	        line(tPoint[0].x, tPoint[0].y, tPoint[1].x, tPoint[1].y);
 			
 	        float[] coord = calibrate.plane.getCurrentPositionAsArray();
-	        float orientation = calibrate.plane.getCurrentOrientation();
+	        float orientation = Util.getOrientation(tPoint);
 	        
 			text("("+coord[0]+","+coord[1]+") O: " + orientation, midPoint.x + 20, midPoint.y + 20);
 			
@@ -182,11 +204,17 @@ public class Application extends PApplet {
 	public void parseIRMessage12(float _x, float _y, float _size){
 		parseIRMessage(_x, _y, _size, 1, 2);
 	}
+	public void parseIRMessage13(float _x, float _y, float _size){
+		parseIRMessage(_x, _y, _size, 1, 3);
+	}
 	public void parseIRMessage21(float _x, float _y, float _size){
 		parseIRMessage(_x, _y, _size, 2, 1);
 	}
 	public void parseIRMessage22(float _x, float _y, float _size){
 		parseIRMessage(_x, _y, _size, 2, 2);
+	}
+	public void parseIRMessage23(float _x, float _y, float _size){
+		parseIRMessage(_x, _y, _size, 2, 3);
 	}
 	public void parseIRMessage31(float _x, float _y, float _size){
 		parseIRMessage(_x, _y, _size, 3, 1);
@@ -194,11 +222,17 @@ public class Application extends PApplet {
 	public void parseIRMessage32(float _x, float _y, float _size){
 		parseIRMessage(_x, _y, _size, 3, 2);
 	}
+	public void parseIRMessage33(float _x, float _y, float _size){
+		parseIRMessage(_x, _y, _size, 3, 3);
+	}
 	public void parseIRMessage41(float _x, float _y, float _size){
 		parseIRMessage(_x, _y, _size, 4, 1);
 	}
 	public void parseIRMessage42(float _x, float _y, float _size){
 		parseIRMessage(_x, _y, _size, 4, 2);
+	}
+	public void parseIRMessage43(float _x, float _y, float _size){
+		parseIRMessage(_x, _y, _size, 4, 3);
 	}
 	
 	public void parseIRMessage(float _x, float _y, float _size, int type, int id) {
@@ -220,11 +254,15 @@ public class Application extends PApplet {
 				_y = OUT_OF_BOUNDS;
 				c = Double.MAX_VALUE;
 				p = new PVector(_x,_y);
-			} else {
+			} 
+			else {
+			//get the correct MedianList
 				MedianList[] l = values.get(type-1);
+				
 				if(l == null){
-					l = new MedianList[] {new MedianList(MEDIAM_BUFFER_SIZE), new MedianList(MEDIAM_BUFFER_SIZE)};
+					l = new MedianList[] {new MedianList(MEDIAM_BUFFER_SIZE), new MedianList(MEDIAM_BUFFER_SIZE), new MedianList(MEDIAM_BUFFER_SIZE)};
 				}
+				
 				l[id-1].add(_x, MedianList.X);
 				l[id-1].add(_y, MedianList.Y);
 				_x = l[id-1].getMedian(MedianList.X);

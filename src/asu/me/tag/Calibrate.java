@@ -100,6 +100,7 @@ public class Calibrate {
 		System.out.println(transform);
 	}
 	
+	
 	public void calculateTransforms() {
 		for (Quadrant q : quadrants) {
 			q.calculateTransform(destination_points);
@@ -113,6 +114,7 @@ public class Calibrate {
 		return new PVector(dst_pt.x, dst_pt.y);
 	}
 	
+	//called in Application
 	public void drawCurrentLocation(PVector[] ir_points, int quadrant, int id, double c) {
 		switch(quadrant){
 			case 1: 
@@ -129,11 +131,15 @@ public class Calibrate {
 				break;
 		}
 		
+		//draw points
 		parent.ellipse(ir_points[0].x, ir_points[0].y, 10, 10);
 		parent.ellipse(ir_points[1].x, ir_points[1].y, 10, 10);
-		// Drawing line between them
+		parent.ellipse(ir_points[2].x, ir_points[2].y, 10, 10);
+		// Drawing lines between them
 		parent.stroke(200,200,200);
         parent.line(ir_points[0].x, ir_points[0].y, ir_points[1].x, ir_points[1].y);
+		parent.line(ir_points[0].x, ir_points[0].y, ir_points[2].x, ir_points[2].y);
+		parent.line(ir_points[2].x, ir_points[2].y, ir_points[1].x, ir_points[1].y);
 		
 //		if(p.x != Application.OUT_OF_BOUNDS && p.y != Application.OUT_OF_BOUNDS){
 //			System.out.println("Quadrant " + quadrant + ": (" + p.x + "," + p.y + ")");

@@ -25,6 +25,7 @@ public class CartesianPlane {
 		this.height = height;
 	}
 	
+	//check which quadrant would be best suited for tracking
 	public PVector[] getCurrentPoint(){
 //		PVector point = quadrants[currentQuadrant].currentPoint;
 //		float x = point.x;
@@ -54,11 +55,13 @@ public class CartesianPlane {
 	}
 	
 	public PVector[] getCurrentTransformedPoint(){
+		//possible bug, shouldn't getCurrentPoint() come before assigning quadrant q
+		PVector[] point = getCurrentPoint();
 		Quadrant q = quadrants[currentQuadrant]; 
-		PVector[] point = getCurrentPoint(); // TODO
+		 // TODO
 //		float x = PApplet.map(point.x, width/2, width, -5, 5);
 //		float y = PApplet.map(point.y, height, 0, -5, 5);
-		return new PVector[]{q.mapPoint(point[0]), q.mapPoint(point[1])};
+		return new PVector[]{q.mapPoint(point[0]), q.mapPoint(point[1]),q.mapPoint(point[2])};
 	}
 	
 	// Same as 'getCurrentTransformedPoint()', but returning result as array
@@ -72,6 +75,7 @@ public class CartesianPlane {
 		return ret;
 	}
 	
+	//should be phased out with the addition of another point
 	public float getCurrentOrientation(){
 		PVector[] point = getCurrentTransformedPoint();
 		int first = 0;
