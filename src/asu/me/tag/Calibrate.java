@@ -113,23 +113,44 @@ public class Calibrate {
 		return new PVector(dst_pt.x, dst_pt.y);
 	}
 	
-	public void drawCurrentLocation(PVector p, int quadrant, double c) {
+	public void drawCurrentLocation(PVector[] ir_points, int quadrant, int id, double c) {
 		switch(quadrant){
 			case 1: 
 				parent.fill(0, 0, 255);
 				break;
 			case 2:
-				parent.fill(0, 0, 192);
+				parent.fill(0, 255, 0);
 				break;
 			case 3:
-				parent.fill(0, 0, 128);
+				parent.fill(255, 255,0);
 				break;
 			case 4:
-				parent.fill(0, 0, 64);
+				parent.fill(255, 0, 0);
 				break;
 		}
 		
-		parent.ellipse(p.x, p.y, 10, 10);
+		parent.ellipse(ir_points[0].x, ir_points[0].y, 10, 10);
+		switch(quadrant){
+		case 1: 
+			parent.fill(128, 128, 255);
+			break;
+		case 2:
+			parent.fill(128, 255, 128);
+			break;
+		case 3:
+			parent.fill(255, 255,128);
+			break;
+		case 4:
+			parent.fill(255, 128, 128);
+			break;
+	}
+		
+		parent.ellipse(ir_points[1].x, ir_points[1].y, 10, 10);
+		// Drawing line between them
+		parent.stroke(200,200,200);
+        parent.line(ir_points[0].x, ir_points[0].y, ir_points[1].x, ir_points[1].y);
+        parent.fill(0,0,0);
+        parent.text(quadrant, ir_points[0].x+2, ir_points[0].y-2);
 		
 //		if(p.x != Application.OUT_OF_BOUNDS && p.y != Application.OUT_OF_BOUNDS){
 //			System.out.println("Quadrant " + quadrant + ": (" + p.x + "," + p.y + ")");
@@ -141,18 +162,18 @@ public class Calibrate {
 		// PositionProvider.getInstance().setXAndY(p.x, p.y);
 		
 		if(calibrationStage == CalibrationStage.COMPLETE){
-			PVector point = quadrants[quadrant-1].mapPoint(p);
-			quadrants[quadrant-1].currentPoint = point;
+//			PVector point = quadrants[quadrant-1].mapPoint(ir_points);
+			quadrants[quadrant-1].currentPoint = ir_points;
 			quadrants[quadrant-1].certainty = c;
 //			parent.ellipse(point.x, point.y, 10, 10);
 			
-			for (int i = 0; i < quadrants.length; i++) {
-				if(i == 3){
-					System.out.println("Q" + (i+1) + ": " + (int)(quadrants[i].certainty*10));
-				} else {
-					System.out.print("Q" + (i+1) + ": " + (int)(quadrants[i].certainty*10) + " ||| ");
-				}
-			}
+//			for (int i = 0; i < quadrants.length; i++) {
+//				if(i == 3){
+//					System.out.println("Q" + (i+1) + ": " + (int)(quadrants[i].certainty*10));
+//				} else {
+//					System.out.print("Q" + (i+1) + ": " + (int)(quadrants[i].certainty*10) + " ||| ");
+//				}
+//			}
 		}
 	}
 	
