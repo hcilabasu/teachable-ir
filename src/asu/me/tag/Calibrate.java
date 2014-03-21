@@ -164,7 +164,7 @@ public class Calibrate {
 		if(calibrationStage == CalibrationStage.COMPLETE){
 //			PVector point = quadrants[quadrant-1].mapPoint(ir_points);
 			quadrants[quadrant-1].currentPoint = ir_points;
-			quadrants[quadrant-1].certainty = c;
+			quadrants[quadrant-1].setCertainty(id,c);
 //			parent.ellipse(point.x, point.y, 10, 10);
 			
 //			for (int i = 0; i < quadrants.length; i++) {

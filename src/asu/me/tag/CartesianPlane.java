@@ -14,7 +14,7 @@ public class CartesianPlane {
 //	private PVector origin;
 	private int width;
 	private int height;
-	private float orientationDelta = 0;
+//	private float orientationDelta = 0;
 	List<Float> previousAngles = new ArrayList<Float>();
 	private static final int MEDIAM_BUFFER_SIZE = 100;
 	
@@ -48,9 +48,10 @@ public class CartesianPlane {
 //			// Quadrant IV
 //			currentQuadrant = 3;
 //		}
+		//reassign the current quadrant based off of average certainty (held in 0)
 		Quadrant current = quadrants[currentQuadrant];
 		for (int i = 0; i < 3; i++) {
-			if((int)(current.certainty*10) >= (int)(quadrants[i].certainty*10)){
+			if((int)(current.certainty[0]*10) >= (int)(quadrants[i].certainty[0]*10)){
 				current = quadrants[i];
 				currentQuadrant = i;
 			}
