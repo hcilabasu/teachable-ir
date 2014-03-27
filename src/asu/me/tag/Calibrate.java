@@ -149,8 +149,31 @@ public class Calibrate {
 		// Drawing line between them
 		parent.stroke(200,200,200);
         parent.line(ir_points[0].x, ir_points[0].y, ir_points[1].x, ir_points[1].y);
+        
         parent.fill(0,0,0);
         parent.text(quadrant, ir_points[0].x+2, ir_points[0].y-2);
+        double distance = PVector.dist(new PVector(ir_points[0].x, ir_points[0].y),new PVector(ir_points[1].x, ir_points[1].y));
+        int y = 0;
+        switch(quadrant){
+        case 1:
+        	y = 10;
+        	break;
+        case 2:
+        	y = 20;
+        	break;
+        case 3:
+        	y = 30;
+        	break;
+        case 4:
+        	y = 40;
+        	break;
+        }
+        //display length reading
+        parent.text(quadrant + ": " + distance, 0, y);
+        
+        //check if the line is egrigiously large
+        if(distance > 55);
+        c = 1000;
 		
 //		if(p.x != Application.OUT_OF_BOUNDS && p.y != Application.OUT_OF_BOUNDS){
 //			System.out.println("Quadrant " + quadrant + ": (" + p.x + "," + p.y + ")");
