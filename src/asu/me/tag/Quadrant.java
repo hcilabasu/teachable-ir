@@ -29,16 +29,10 @@ public abstract class Quadrant {
 	public PVector[] points;
 	public PVector[] boundaryPoints;
 	public PerspectiveTransform transform;
-	//certainty is a measure of a point's centerness
-	public double[] certainty;
+	public double certainty;
 	
 	public Quadrant(){
 		points = new PVector[4];
-		//certainty array holds first second and average. Average is at 0
-		certainty = new double[3];
-		certainty[0] = -1;
-		certainty[1] = certainty[0];
-		certainty[2] = certainty[0];
 		currentPoint = new PVector[]{new PVector(0,0), new PVector(0,0)};
 	}
 	
@@ -70,18 +64,6 @@ public abstract class Quadrant {
 	public abstract PVector mapPoint(PVector point);
 	
 	public abstract PVector[] getQuadrantPoints(List<PVector> points);
-	
-	public void setCertainty(int id, double c){
-		certainty[id] = c;
-		//at least one point does not have a certainty
-		if(certainty[1] == -1 || certainty[2] == -1){
-			return;
-		}
-		//get the average certainty and update it for the quadrant
-		else{
-			certainty[0] = (certainty[1] + certainty[2])/2;
-		}
-	}
 	
 	private void setComplementaryPoints(){
 		if(points[CENTER] != null && points[EDGE] != null){

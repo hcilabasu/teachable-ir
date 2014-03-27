@@ -11,7 +11,6 @@ public class Application extends PApplet {
 
 	private static final long serialVersionUID = 8412123833928508734L;
 	private static final int MEDIAM_BUFFER_SIZE = 200;
-	private static final double CONFIDENCE_MAX = 1000.00;
 	private static final byte UNTRACKED_BUFFER_VAL = 5;
 
 	private static byte untracked[][] = new byte[4][2];
@@ -231,8 +230,7 @@ public class Application extends PApplet {
 			float _x = sensor_values[type-1][id-1].x;
 			float _y = sensor_values[type-1][id-1].y;
 			
-			//right now this is a magic value, but it's far greater than 
-			double c = CONFIDENCE_MAX;
+			double c = Double.MAX_VALUE;
 			PVector p;
 			
 			MedianList[] l = values.get(type-1);
@@ -243,9 +241,6 @@ public class Application extends PApplet {
 			if(_x >= 1 || _y >= 1){
 				// TODO handle untracked IR sources
 				//System.out.println("UNTRACKED " + type + " " + id);
-				
-				//as long as the point is untracked and less than the buffer value
-				//bump the untracked tag up
 				if(untracked[type-1][id-1] < UNTRACKED_BUFFER_VAL){
 					l[id-1].drop(MedianList.X);
 					l[id-1].drop(MedianList.Y);
@@ -260,14 +255,14 @@ public class Application extends PApplet {
 			} 
 			else if(untracked[type-1][id-1] <= 0){
 				untracked[type-1][id-1] = 0;
+				//check to see if the pattern makes sense
+				//if the pattern is too big, then try dropping values to get rid of the problem
 				
 				//good (probably) value
 				l[id-1].add(_x, MedianList.X);
 				l[id-1].add(_y, MedianList.Y);
 				_x = l[id-1].getMedian(MedianList.X);
 				_y = l[id-1].getMedian(MedianList.Y);
-				//c is proportional to the distance from the optimal tracking area
-				//for the camera; tracks best in the middle
 				c = Math.sqrt(Math.pow(_x - 0.5, 2) + Math.pow(_y - 0.5, 2)); 
 				//System.out.print (type + " ");
 				//System.out.println(_x + "," + _y);
@@ -283,9 +278,7 @@ public class Application extends PApplet {
 			// Drawing current point on calibration panel
 			calibrate.drawCurrentLocation(ir_points[type-1], type, id, c);
 			return;
-			
 			}
-			
 			//buffer area, ignoring values for now
 			else{
 				untracked[type-1][id-1]--;
