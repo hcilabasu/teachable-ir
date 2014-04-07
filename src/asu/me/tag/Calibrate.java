@@ -171,7 +171,7 @@ public class Calibrate {
         //display length reading
         parent.text(quadrant + ": " + distance, 0, y);
         
-        //check if the line is egrigiously large
+        //check if the line is egregiously large
         if(distance > 55);
         c = 1000;
 		
