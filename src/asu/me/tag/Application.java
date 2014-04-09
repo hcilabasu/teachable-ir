@@ -107,6 +107,39 @@ public class Application extends PApplet {
 //				ellipse(q.currentPoint.x,q.currentPoint.y, 10, 10);
 //			}
 		}
+		else{
+			String infoMessage = "";
+			int stage = calibrate.calibrationStage;
+			switch(stage){
+				case 0:
+					infoMessage = "Calibrate center";
+					break;
+				case 1:
+					infoMessage = "Center calibrated, calibrate upper right corner";
+					break;
+				case 2:
+					infoMessage = "Upper right corner calibrated, calibrate upper left corner";
+					break;
+				case 3:
+					infoMessage = "Upper left corner calibrated, calibrate lower left corner";
+					break;
+				case 4:
+					infoMessage = "Lower left corner calibrated, calibrate lower right corner";
+					break;
+				case 5: 
+					infoMessage = "Calibration complete, press \"C\" ";
+					break;
+				case 6:
+					//technically impossible case
+					infoMessage = "";
+					break;
+			}
+			fill(10,10,10);
+			int y = 15;
+			int x = this.getSize().width/2 + 2;
+			text(infoMessage, x, y);
+			
+		}
 		
 	}
 
