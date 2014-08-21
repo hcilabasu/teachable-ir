@@ -24,12 +24,7 @@ public class Calibrate {
 	ArrayList<PVector> calibration_points = new ArrayList<PVector>();
 	ArrayList<PVector> destination_points = new ArrayList<PVector>();
 	
-	public Quadrant[] quadrants = {
-			new Q1(), 
-			new Q2(),
-			new Q3(),
-			new Q4()
-	};
+	public Quadrant[] quadrants;
 	
 	public CartesianPlane plane;
 
@@ -48,11 +43,11 @@ public class Calibrate {
 		destination_points.add(new PVector(parent.width - 2, parent.height - 2)); // Bottom right corner
 		destination_points.add(new PVector(parent.width / 2 + 2, parent.height - 2)); // Bottom left corner
 		
+		quadrants = new Quadrant[]{new Q1(),new Q2(), new Q3(), new Q4()};
 		plane = new CartesianPlane(quadrants, new PVector(parent.width*0.75f, parent.height*0.5f), parent.width, parent.height);
 		// Sharing position
 		GatewayServer server = new GatewayServer(plane);
 		server.start();
-		
 	}
 
 	public void drawDestinationBoundingBox(ArrayList<PVector> dp) {
@@ -113,34 +108,34 @@ public class Calibrate {
 		return new PVector(dst_pt.x, dst_pt.y);
 	}
 	
-	public void drawCurrentLocation(PVector[] ir_points, int quadrant, int id, double c) {
+	public void drawCurrentLocation(PVector[] ir_points, int quadrant, int id, double certainty) {
 		switch(quadrant){
-			case 1: 
+			case 0: 
 				parent.fill(0, 0, 255);
 				break;
-			case 2:
+			case 1:
 				parent.fill(0, 255, 0);
 				break;
-			case 3:
+			case 2:
 				parent.fill(255, 255,0);
 				break;
-			case 4:
+			case 3:
 				parent.fill(255, 0, 0);
 				break;
 		}
 		
 		parent.ellipse(ir_points[0].x, ir_points[0].y, 10, 10);
 		switch(quadrant){
-		case 1: 
+		case 0: 
 			parent.fill(128, 128, 255);
 			break;
-		case 2:
+		case 1:
 			parent.fill(128, 255, 128);
 			break;
-		case 3:
+		case 2:
 			parent.fill(255, 255,128);
 			break;
-		case 4:
+		case 3:
 			parent.fill(255, 128, 128);
 			break;
 	}
@@ -153,26 +148,27 @@ public class Calibrate {
         parent.text(quadrant, ir_points[0].x+2, ir_points[0].y-2);
         double distance = PVector.dist(new PVector(ir_points[0].x, ir_points[0].y),new PVector(ir_points[1].x, ir_points[1].y));
         int y = 0;
+        
         switch(quadrant){
-        case 1:
+        case 0:
         	y = 10;
         	break;
-        case 2:
+        case 1:
         	y = 20;
         	break;
-        case 3:
+        case 2:
         	y = 30;
         	break;
-        case 4:
+        case 3:
         	y = 40;
         	break;
         }
         //display length reading
         parent.text(quadrant + ": " + distance, 0, y);
         
-        //check if the line is egregiously large
+        //check if the line is too large
         if(distance > 55);
-        c = 1000;
+        certainty = 1000;
 //>>>>>>> FETCH_HEAD
 		
 //		if(p.x != Application.OUT_OF_BOUNDS && p.y != Application.OUT_OF_BOUNDS){
@@ -187,14 +183,15 @@ public class Calibrate {
 		if(calibrationStage == CalibrationStage.COMPLETE){
 //			PVector point = quadrants[quadrant-1].mapPoint(ir_points);
 			quadrants[quadrant-1].currentPoint = ir_points;
-			quadrants[quadrant-1].certainty = c;
+			quadrants[quadrant-1].certainty = certainty;
 //			parent.ellipse(point.x, point.y, 10, 10);
 			
+			//DEBUG
 //			for (int i = 0; i < quadrants.length; i++) {
 //				if(i == 3){
-//					System.out.println("Q" + (i+1) + ": " + (int)(quadrants[i].certainty*10));
+//					System.out.println("Q" + (i+1) + ": " + (int)(quadrants[i].certainty));
 //				} else {
-//					System.out.print("Q" + (i+1) + ": " + (int)(quadrants[i].certainty*10) + " ||| ");
+//					System.out.print("Q" + (i+1) + ": " + (int)(quadrants[i].certainty) + " ||| ");
 //				}
 //			}
 		}
@@ -205,45 +202,4 @@ public class Calibrate {
 		parent.fill(0, 255, 0);
 		parent.ellipse(dst_pt.x, dst_pt.y, 10, 10);
 	}
-
-//	public void setCalibrationPoint(PVector p) {
-//		System.out.println("Adding calibration point...");
-//		System.out.println(p);
-//
-//		this.in_progress = false;
-//
-//		if (calibration_points.size() == 4) {
-//			calibration_points.clear();
-//			bounding_box = null;
-//		}
-//		calibration_points.add(p);
-//
-//		if (calibration_points.size() == 4) {
-//			this.complete = true;
-//			int[] x = {(int)calibration_points.get(0).x, (int)calibration_points.get(1).x, (int)calibration_points.get(2).x, (int)calibration_points.get(3).x};
-//			int[] y = {(int)calibration_points.get(0).y, (int)calibration_points.get(1).y, (int)calibration_points.get(2).y, (int)calibration_points.get(3).y};
-//			bounding_box = new Polygon(x,y,4);
-//			calculateTransform(this.destination_points, this.calibration_points);
-//		}
-//	}
-
-//	public void drawCalibrationPoints() {
-//		parent.fill(255, 0, 0);
-//		
-//		for (int i = 0; i < calibration_points.size(); i++) {
-//			parent.ellipse(calibration_points.get(i).x,
-//					calibration_points.get(i).y, 10, 10);
-//		}
-//
-//	}
-	
-//	public void drawCalibrationBoundingBox(ArrayList<PVector> cp) {
-//		parent.stroke(0);
-//		parent.noFill();
-//
-//		parent.quad(cp.get(0).x, cp.get(0).y, cp.get(1).x, cp.get(1).y,
-//				cp.get(2).x, cp.get(2).y, cp.get(3).x, cp.get(3).y);
-//	}
-
-
 }

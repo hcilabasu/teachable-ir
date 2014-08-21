@@ -38,7 +38,7 @@ public class Application extends PApplet {
 	}
 
 	public void draw() {
-		// Drawing the white background
+		// Drawing the background
 		noStroke();
 		fill( 255, 255, 255, 50);
         rect(0, 0, width, height);
@@ -49,7 +49,7 @@ public class Application extends PApplet {
             ellipse(p.x, p.y, 10, 10);
 		}
         
-        // Drawing line between them
+        // Drawing line between points
         stroke(200,200,200);
 		beginShape(PConstants.LINES);
 		for (PVector p : points){

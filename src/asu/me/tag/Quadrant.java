@@ -24,7 +24,7 @@ public abstract class Quadrant {
 	public static int EDGE = 1;
 	public static int COMPL1 = 2;
 	public static int COMPL2 = 3;
-
+	
 	public PVector[] currentPoint;
 	public PVector[] points;
 	public PVector[] boundaryPoints;
@@ -47,18 +47,6 @@ public abstract class Quadrant {
 	
 	public void calculateTransform(List<PVector> dPoints){
 		boundaryPoints = getQuadrantPoints(dPoints);
-		
-//		this.transform = PerspectiveTransform.getQuadToQuad(
-//				// Original points
-//				points[0].x, points[0].y, 
-//				points[1].x, points[1].y, 
-//				points[2].x, points[2].y, 
-//				points[3].x, points[3].y,
-//				// Target points
-//				qPoints.get(0).x, qPoints.get(0).y, 
-//				qPoints.get(1).x, qPoints.get(1).y, 
-//				qPoints.get(2).x, qPoints.get(2).y, 
-//				qPoints.get(3).x, qPoints.get(3).y);
 	}
 	
 	public abstract PVector mapPoint(PVector point);
@@ -67,11 +55,11 @@ public abstract class Quadrant {
 	
 	private void setComplementaryPoints(){
 		if(points[CENTER] != null && points[EDGE] != null){
-			// Setting COMPL1
+			
 			points[COMPL1] = new PVector();
 			points[COMPL1].x = points[CENTER].x;
 			points[COMPL1].y = points[EDGE].y;
-			// Setting COMPL2
+
 			points[COMPL2] = new PVector();
 			points[COMPL2].x = points[EDGE].x;
 			points[COMPL2].y = points[CENTER].y;

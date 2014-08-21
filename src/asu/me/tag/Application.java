@@ -51,10 +51,10 @@ public class Application extends PApplet {
 	
 		System.out.println(sensor_values);
 
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 2; j++) {
-				sensor_values[i][j] = new PVector(0,0);
-				ir_points[i][j] = new PVector(0,0);
+		for (int quadrant = 0; quadrant < 4; quadrant++) {
+			for (int id = 0; id < 2; id++) {
+				sensor_values[quadrant][id] = new PVector(0,0);
+				ir_points[quadrant][id] = new PVector(0,0);
 			}
 		}
 		
@@ -72,9 +72,9 @@ public class Application extends PApplet {
 	}
 
 	public void draw() {
-		for (int i = 1; i <= 4; i++) {
-			for (int j = 1; j <= 2; j++) {
-				readValues(i, j);
+		for (int quadrant = 0; quadrant < 4; quadrant++) {
+			for (int id = 0; id < 2; id++) {
+				readValues(quadrant, id);
 			}
 		}
 		noStroke();
@@ -82,15 +82,13 @@ public class Application extends PApplet {
 		fill( 255, 255, 255, 50);
         rect(0, 0, width, height);
         
+        //DEBUG
 //		calibrate.drawCalibrationPoints();
-		calibrate.drawDestinationBoundingBox(calibrate.destination_points);
-//		
+		calibrate.drawDestinationBoundingBox(calibrate.destination_points);	
 		if (calibrate.calibrationStage == CalibrationStage.COMPLETE) {
 			// Drawing calculated point
 			PVector[] tPoint = calibrate.plane.getCurrentTransformedPoint();
 			fill( 0, 0, 255);
-//			ellipse(tPoint[0].x, tPoint[0].y, 10, 10);
-//			ellipse(tPoint[1].x, tPoint[1].y, 10, 10);
 			PVector midPoint = Util.getMidPoint(new PVector[]{tPoint[0], tPoint[1]});
 			ellipse(midPoint.x, midPoint.y, 10, 10);
 			stroke(200,200,200);
@@ -101,7 +99,7 @@ public class Application extends PApplet {
 	        
 			text(calibrate.plane.getCurrentQuadrant() + " ("+coord[0]+","+coord[1]+") O: " + orientation, midPoint.x + 20, midPoint.y + 20);
 			
-			// Drawing all points; good for debugging
+			//DEBUG draw all points
 //			fill(0,0,0,63);
 //			for (Quadrant q : calibrate.quadrants) {
 //				ellipse(q.currentPoint.x,q.currentPoint.y, 10, 10);
@@ -129,8 +127,7 @@ public class Application extends PApplet {
 				case 5: 
 					infoMessage = "Calibration complete, press \"C\" ";
 					break;
-				case 6:
-					//technically impossible case
+				default:
 					infoMessage = "";
 					break;
 			}
@@ -145,17 +142,11 @@ public class Application extends PApplet {
 
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "asu.me.tag.Application" });
-
-		// Starting communication channel with python application
-//		GatewayServer server = new GatewayServer(PositionProvider.getInstance());
-//		server.start();
 	}
 	
 	public void keyPressed() {
 
 		if (key == 'C' || key == 'c') {
-			
-//			// Increment calibration stage
 			calibrate.calibrationStage++;
 			
 			switch(calibrate.calibrationStage){
@@ -193,17 +184,8 @@ public class Application extends PApplet {
 	public PVector mapIRPoint(float _x, float _y) {
 		float x; 
 		float y;
-		
-		// Checking if wiimote is picking up the IR signal
-//		if(_x >= 1 && _y >= 1){
-//			// No signal
-//			x = OUT_OF_BOUNDS;
-//			y = OUT_OF_BOUNDS;
-//		} else {
-			// It has a signal
-			x = map(_x, 0, 1, 2, width/2 - 2); // Maps _x from the range 0,1 to the range 2,width/2-2
+			x = map(_x, 0, 1, 2, width/2 - 2); 
 			y = map(_y, 0, 1, height - 2, 2);
-//		}
 		
 		return new PVector(x,y);
 	}
@@ -214,70 +196,54 @@ public class Application extends PApplet {
 	 */
 	public void parseIRMessage11(float _x, float _y, float _size){
 		parseIRMessage(_x, _y, _size, 1, 1);
-		//System.out.print("1-1 ");
-		//System.out.println(_x +" , " + _y);
 	}
 	public void parseIRMessage12(float _x, float _y, float _size){
 		parseIRMessage(_x, _y, _size, 1, 2);
-		//System.out.print("1-2 ");
-		//System.out.println(_x +" , " + _y);
 	}
 	public void parseIRMessage21(float _x, float _y, float _size){
 		parseIRMessage(_x, _y, _size, 2, 1);
-		//System.out.print("2-1 ");
-		//System.out.println(_x +" , " + _y);
 	}
 	public void parseIRMessage22(float _x, float _y, float _size){
 		parseIRMessage(_x, _y, _size, 2, 2);
-		//System.out.print("2-2 ");
-		//System.out.println(_x +" , " + _y);
 	}
 	public void parseIRMessage31(float _x, float _y, float _size){
 		parseIRMessage(_x, _y, _size, 3, 1);
-		//System.out.print("3-1 ");
-		//System.out.println(_x +" , " + _y);
 	}
 	public void parseIRMessage32(float _x, float _y, float _size){
 		parseIRMessage(_x, _y, _size, 3, 2);
-		//System.out.print("3-2 ");
-		//System.out.println(_x +" , " + _y);
 	}
 	public void parseIRMessage41(float _x, float _y, float _size){
 		parseIRMessage(_x, _y, _size, 4, 1);
-		//System.out.print("4-1 ");
-		//System.out.println(_x +" , " + _y);
 	}
 	public void parseIRMessage42(float _x, float _y, float _size){
 		parseIRMessage(_x, _y, _size, 4, 2);
-		//System.out.print("4-2 ");
-		//System.out.println(_x +" , " + _y);
 	}
 	
 	public void parseIRMessage(float _x, float _y, float _size, int type, int id) {
 		sensor_values[type-1][id-1] = new PVector(_x, _y);
 	}
 
-	public void readValues(int type, int id) {
-		if(sensor_values[type-1][id-1] != null){
+	public void readValues(int quadrant, int id) {
+		if(sensor_values[quadrant][id] != null){
 				
-			float _x = sensor_values[type-1][id-1].x;
-			float _y = sensor_values[type-1][id-1].y;
+			float _x = sensor_values[quadrant][id].x;
+			float _y = sensor_values[quadrant][id].y;
 			
-			double c = Double.MAX_VALUE;
+			double certainty = Double.MAX_VALUE;
 			PVector p;
 			
-			MedianList[] l = values.get(type-1);
-			if(l == null){
-				l = new MedianList[] {new MedianList(MEDIAM_BUFFER_SIZE), new MedianList(MEDIAM_BUFFER_SIZE)};
+			MedianList[] list = values.get(quadrant);
+			if(list == null){
+				list = new MedianList[] {new MedianList(MEDIAM_BUFFER_SIZE), new MedianList(MEDIAM_BUFFER_SIZE)};
 			}
 			
 			if(_x >= 1 || _y >= 1){
 				// TODO handle untracked IR sources
 				//System.out.println("UNTRACKED " + type + " " + id);
-				if(untracked[type-1][id-1] < UNTRACKED_BUFFER_VAL){
-					l[id-1].drop(MedianList.X);
-					l[id-1].drop(MedianList.Y);
-					untracked[type-1][id-1]++;
+				if(untracked[quadrant][id] < UNTRACKED_BUFFER_VAL){
+					list[id].drop(MedianList.X);
+					list[id].drop(MedianList.Y);
+					untracked[quadrant][id]++;
 				}
 				return;
 				/*
@@ -286,35 +252,33 @@ public class Application extends PApplet {
 				l[id-1].add(_y, MedianList.Y);
 			*/
 			} 
-			else if(untracked[type-1][id-1] <= 0){
-				untracked[type-1][id-1] = 0;
+			else if(untracked[quadrant][id] <= 0){
+				untracked[quadrant][id] = 0;
 				//check to see if the pattern makes sense
 				//if the pattern is too big, then try dropping values to get rid of the problem
 				
 				//good (probably) value
-				l[id-1].add(_x, MedianList.X);
-				l[id-1].add(_y, MedianList.Y);
-				_x = l[id-1].getMedian(MedianList.X);
-				_y = l[id-1].getMedian(MedianList.Y);
-				c = Math.sqrt(Math.pow(_x - 0.5, 2) + Math.pow(_y - 0.5, 2)); 
+				list[id].add(_x, MedianList.X);
+				list[id].add(_y, MedianList.Y);
+				_x = list[id].getMedian(MedianList.X);
+				_y = list[id].getMedian(MedianList.Y);
+				
+				// Calculating certainty
+				certainty = Math.sqrt(Math.pow(_x - 0.5, 2) + Math.pow(_y - 0.5, 2)); 
 				//System.out.print (type + " ");
 				//System.out.println(_x + "," + _y);
-				// Calculating certainty
-				
-				
-				
 				//System.out.println("c: " + c);
 				p = mapIRPoint(_x, _y);
 			
 			// Setting the quadrant current position
-			ir_points[type-1][id-1] = p;
+			ir_points[quadrant][id-1] = p;
 			// Drawing current point on calibration panel
-			calibrate.drawCurrentLocation(ir_points[type-1], type, id, c);
+			calibrate.drawCurrentLocation(ir_points[quadrant], quadrant, id, certainty);
 			return;
 			}
 			//buffer area, ignoring values for now
 			else{
-				untracked[type-1][id-1]--;
+				untracked[quadrant][id]--;
 				return;
 			}
 		}

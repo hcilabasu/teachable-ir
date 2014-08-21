@@ -11,7 +11,6 @@ public class CartesianPlane {
 	
 	private Quadrant[] quadrants;
 	private int currentQuadrant = 0; // 0 is for quadrant I, 1 for II, etc...
-//	private PVector origin;
 	private int width;
 	private int height;
 	private float orientationDelta = 0;
@@ -22,7 +21,6 @@ public class CartesianPlane {
 	
 	public CartesianPlane(Quadrant[] quadrants, PVector origin, int width, int height) {
 		this.quadrants = quadrants;
-//		this.origin = origin;
 		this.width = width;
 		this.height = height;
 	}
@@ -32,29 +30,14 @@ public class CartesianPlane {
 	}
 	
 	public PVector[] getCurrentPoint(){
-//		PVector point = quadrants[currentQuadrant].currentPoint;
-//		float x = point.x;
-//		float y = point.y;
-//		if(x >= origin.x && y <= origin.y){
-//			// Quadrant I
-//			currentQuadrant = 0;
-//		} else if(x < origin.x && y <= origin.y){
-//			// Quadrant II
-//			currentQuadrant = 1;
-//		} else if(x < origin.x && y > origin.y){
-//			// Quadrant III
-//			currentQuadrant = 2;
-//		} else if(x >= origin.x && y > origin.y){
-//			// Quadrant IV
-//			currentQuadrant = 3;
-//		}
 		Quadrant current = quadrants[currentQuadrant];
 		for (int i = 0; i < 3; i++) {
-			if((int)(current.certainty*10) >= (int)(quadrants[i].certainty*10)){
+			if((current.certainty) >= (quadrants[i].certainty)){
 				current = quadrants[i];
 				currentQuadrant = i;
 			}
 		}
+		//DEBUG 
 //		System.out.println("Current QUAD: " + currentQuadrant);
 		return current.currentPoint;
 	}
@@ -94,25 +77,6 @@ public class CartesianPlane {
 			if (angle < 0){
 				angle = angle + 360;
 			}
-			// Calculating angle median
-//			addAngle(angle);
-//			median = getAngleMedian();			
-//			orientationDelta = Math.abs(Math.abs(angle) - median);
-//			swap = orientationDelta > 170;
-//			if(swap){
-//				first = Math.abs(first - 1);
-//				second = Math.abs(second - 1); 
-//				System.out.println("SWAP");
-//			} else if (orientationDelta != 0){
-////				System.out.println(orientationDelta);			
-//			} 
-			
-//			System.out.println(median);
-			
-			
-//			System.out.println(angle + (swap ? ", SWAP" : ""));
-		} else {
-			// Handle missing point
 		}
 		return angle;
 	}
