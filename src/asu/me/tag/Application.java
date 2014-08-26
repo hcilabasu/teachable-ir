@@ -271,7 +271,7 @@ public class Application extends PApplet {
 				p = mapIRPoint(_x, _y);
 			
 			// Setting the quadrant current position
-			ir_points[quadrant][id-1] = p;
+			ir_points[quadrant][id] = p;
 			// Drawing current point on calibration panel
 			calibrate.drawCurrentLocation(ir_points[quadrant], quadrant, id, certainty);
 			return;
