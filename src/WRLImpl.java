@@ -1,44 +1,10 @@
-package asu.me.tag;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import wiiremotej.AbsoluteAnalogStickMouse;
-import wiiremotej.AccelerometerMouse;
-import wiiremotej.AnalogStickData;
-import wiiremotej.AnalogStickMouse;
-import wiiremotej.ButtonMap;
-import wiiremotej.ButtonMouseMap;
-import wiiremotej.ButtonMouseWheelMap;
-import wiiremotej.IRAccelerometerMouse;
-import wiiremotej.IRMouse;
-import wiiremotej.MotionAccelerometerMouse;
-import wiiremotej.PrebufferedSound;
-import wiiremotej.RelativeAnalogStickMouse;
-import wiiremotej.TiltAccelerometerMouse;
-import wiiremotej.WiiRemote;
-import wiiremotej.WiiRemoteExtension;
-import wiiremotej.WiiRemoteJ;
-import wiiremotej.event.WRAccelerationEvent;
-import wiiremotej.event.WRButtonEvent;
-import wiiremotej.event.WRClassicControllerExtensionEvent;
-import wiiremotej.event.WRExtensionEvent;
-import wiiremotej.event.WRGuitarExtensionEvent;
-import wiiremotej.event.WRIREvent;
-import wiiremotej.event.WRNunchukExtensionEvent;
-import wiiremotej.event.WRStatusEvent;
-import wiiremotej.event.WiiRemoteAdapter;
+import java.util.ArrayList;
+import java.awt.*;
+import javax.swing.*;
+import wiiremotej.*;
+import wiiremotej.event.*;
+import javax.sound.sampled.*;
+import java.io.*;
 
 /**
  * Implements WiiRemoteListener and acts as a general test class. Note that you can ignore the main method pretty much, as it mostly has to do with the graphs and GUIs.
@@ -47,7 +13,6 @@ import wiiremotej.event.WiiRemoteAdapter;
  * @version 1/05/07
  */
 
-@SuppressWarnings("all")
 public class WRLImpl extends WiiRemoteAdapter
 {
     private static boolean accelerometerSource = true; //true = wii remote, false = nunchuk
@@ -75,7 +40,7 @@ public class WRLImpl extends WiiRemoteAdapter
     
     private static PrebufferedSound prebuf;
     
-	public static void main(String args[])
+    public static void main(String args[])
     {
         //basic console logging options...
         WiiRemoteJ.setConsoleLoggingAll();
